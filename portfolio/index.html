@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mithilish | Portfolio</title>
+    <meta name="description" content="Portfolio of Mithilish: web development and machine learning projects.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="nav">
+        <a class="logo" href="#home">mithilish</a>
+        <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+        <ul class="links">
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <header id="home" class="hero">
+        <h1>Hi, I'm <span>Mithilish</span></h1>
+        <p>I build web apps and machine learning projects, from pixel-perfect UIs to models that learn from data.</p>
+        <a href="#projects" class="btn">View my work</a>
+    </header>
+
+    <section id="about" class="section">
+        <h2>About me</h2>
+        <p class="lead">
+            I'm a developer who enjoys turning ideas into working software. On the web side I write clean,
+            responsive HTML, CSS and JavaScript; on the ML side I work with Python, scikit-learn and NumPy on
+            NLP, computer vision and graph learning problems.
+        </p>
+        <ul class="skills">
+            <li>HTML</li><li>CSS</li><li>JavaScript</li><li>Python</li>
+            <li>scikit-learn</li><li>NumPy</li><li>pandas</li><li>Git</li>
+        </ul>
+    </section>
+
+    <section id="projects" class="section alt">
+        <h2>Projects</h2>
+        <div class="grid">
+            <article class="card">
+                <div class="thumb" style="--c1:#6d5ba8;--c2:#9283b3">🧮</div>
+                <h3>Calculator</h3>
+                <p>Keyboard-friendly calculator with chained operations, percent and backspace. No <code>eval()</code>.</p>
+                <a href="../calculator/">Live demo →</a>
+            </article>
+            <article class="card">
+                <div class="thumb" style="--c1:#3a3a3a;--c2:#ffcc00">☢️</div>
+                <h3>Nuclear Boiler Countdown</h3>
+                <p>Countdown timer where boilers drain as time runs out, with pause, resume and restart.</p>
+                <a href="../countdown/">Live demo →</a>
+            </article>
+            <article class="card">
+                <div class="thumb" style="--c1:#007bff;--c2:#00c6ff">📣</div>
+                <h3>Ad Agency Landing Page</h3>
+                <p>Responsive marketing landing page with services, call to action and contact section.</p>
+                <a href="https://grapherithilesh27.github.io/mithilish-landing-page-/">Live demo →</a>
+            </article>
+            <article class="card">
+                <div class="thumb" style="--c1:#0f766e;--c2:#34d399">📩</div>
+                <h3>SMS Spam Detection</h3>
+                <p>TF-IDF + Naive Bayes spam filter, 98.6% accuracy on the UCI SMS Spam Collection.</p>
+                <a href="https://github.com/grapherithilesh27/sms-spam-detection-ml">Code →</a>
+            </article>
+            <article class="card">
+                <div class="thumb" style="--c1:#7c3aed;--c2:#ec4899">🧠</div>
+                <h3>Machine Learning Projects</h3>
+                <p>Six tested projects: text classification, fraud detection, explainable AI and a NumPy GNN.</p>
+                <a href="https://github.com/grapherithilesh27/Machine-Learning-Projects-">Code →</a>
+            </article>
+            <article class="card">
+                <div class="thumb" style="--c1:#b45309;--c2:#f59e0b">🔍</div>
+                <h3>Applied ML: Vision &amp; NLP</h3>
+                <p>Sentiment analysis, surface-defect detection, emotion recognition and YOLO vehicle detection.</p>
+                <a href="https://github.com/grapherithilesh27/Machine-Learning-Things">Code →</a>
+            </article>
+        </div>
+    </section>
+
+    <section id="contact" class="section">
+        <h2>Contact me</h2>
+        <form id="contact-form" class="contact">
+            <input type="text" name="name" placeholder="Your name" required>
+            <textarea name="message" rows="5" placeholder="Your message" required></textarea>
+            <button type="submit" class="btn">Send message</button>
+            <p class="note">Opens your email app with the message filled in.</p>
+        </form>
+    </section>
+
+    <footer class="footer">
+        <a href="mailto:mithileshf17mobile@gmail.com">mithileshf17mobile@gmail.com</a> ·
+        <a href="https://github.com/grapherithilesh27">GitHub</a>
+    </footer>
+
+    <script>
+        const toggle = document.querySelector(".menu-toggle");
+        const links = document.querySelector(".links");
+        toggle.addEventListener("click", () => {
+            const open = links.classList.toggle("open");
+            toggle.setAttribute("aria-expanded", open);
+        });
+        links.addEventListener("click", () => links.classList.remove("open"));
+
+        document.getElementById("contact-form").addEventListener("submit", e => {
+            e.preventDefault();
+            const f = e.target;
+            const subject = encodeURIComponent(`Portfolio message from ${f.name.value}`);
+            const body = encodeURIComponent(f.message.value);
+            window.location.href = `mailto:mithileshf17mobile@gmail.com?subject=${subject}&body=${body}`;
+        });
+    </script>
+</body>
+</html>

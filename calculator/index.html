@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a class="back" href="../">← All projects</a>
+    <main class="calculator" aria-label="Calculator">
+        <div class="display">
+            <div id="history" class="history" aria-live="polite"></div>
+            <output id="display" class="current">0</output>
+        </div>
+        <div class="keys">
+            <button class="fn" data-action="clear">AC</button>
+            <button class="fn" data-action="delete">⌫</button>
+            <button class="fn" data-action="percent">%</button>
+            <button class="op" data-op="/">÷</button>
+
+            <button data-digit="7">7</button>
+            <button data-digit="8">8</button>
+            <button data-digit="9">9</button>
+            <button class="op" data-op="*">×</button>
+
+            <button data-digit="4">4</button>
+            <button data-digit="5">5</button>
+            <button data-digit="6">6</button>
+            <button class="op" data-op="-">−</button>
+
+            <button data-digit="1">1</button>
+            <button data-digit="2">2</button>
+            <button data-digit="3">3</button>
+            <button class="op" data-op="+">+</button>
+
+            <button class="zero" data-digit="0">0</button>
+            <button data-action="decimal">.</button>
+            <button class="eq" data-action="equals">=</button>
+        </div>
+    </main>
+    <p class="hint">Keyboard works too: digits, + − * /, Enter, Backspace, Esc</p>
+    <script src="script.js"></script>
+</body>
+</html>

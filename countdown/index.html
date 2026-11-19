@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nuclear Boiler Countdown</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            padding: 24px 16px;
+            background: radial-gradient(circle at top, #3a3a3a, #1c1c1c);
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+            color: #fff;
+        }
+        .back { position: absolute; top: 16px; left: 16px; color: #ffcc00; text-decoration: none; }
+        h1 { font-size: 1.4rem; letter-spacing: .08em; text-transform: uppercase; color: #ffcc00; }
+        h1::before { content: "☢ "; }
+
+        .setup { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; align-items: end; }
+        .setup label { display: flex; flex-direction: column; font-size: .8rem; gap: 4px; color: #ccc; }
+        .setup input {
+            width: 80px; padding: 10px; font-size: 1.2rem; text-align: center;
+            border-radius: 10px; border: 2px solid #555; background: #222; color: #fff;
+        }
+
+        .boilers { display: flex; gap: clamp(16px, 6vw, 60px); }
+        .unit { text-align: center; }
+        .label { margin-bottom: 10px; font-size: 1rem; color: #ccc; }
+        .boiler {
+            width: clamp(70px, 18vw, 100px); height: clamp(200px, 40vh, 300px);
+            background: #2b2b2b; border: 5px solid #555; border-radius: 20px;
+            position: relative; overflow: hidden;
+        }
+        .fuel {
+            position: absolute; left: 0; bottom: 0; width: 100%; height: 0%;
+            background: linear-gradient(#ffe066, #ffcc00 40%, #e6a800);
+            box-shadow: 0 0 20px #ffcc00aa; transition: height .9s linear;
+        }
+        .boiler.critical .fuel { background: linear-gradient(#ff8a65, #ff5722); box-shadow: 0 0 25px #ff5722; }
+
+        .time { font-size: clamp(2.2rem, 10vw, 3.5rem); font-variant-numeric: tabular-nums; letter-spacing: .05em; }
+        .time.done { color: #ff5722; animation: blink 1s steps(2) infinite; }
+        @keyframes blink { 50% { opacity: .2; } }
+
+        .controls { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+        button {
+            background: #ffcc00; color: #222; border: none; border-radius: 10px;
+            padding: 12px 22px; font-size: 1rem; font-weight: 600; cursor: pointer;
+        }
+        button:disabled { opacity: .4; cursor: not-allowed; }
+        button.secondary { background: #444; color: #fff; }
+    </style>
+</head>
+<body>
+<a class="back" href="../">← All projects</a>
+<h1>Nuclear Boiler Countdown</h1>
+
+<form class="setup" id="setup">
+    <label>Hours <input id="h" type="number" min="0" max="99" value="0"></label>
+    <label>Minutes <input id="m" type="number" min="0" max="59" value="1"></label>
+    <label>Seconds <input id="s" type="number" min="0" max="59" value="30"></label>
+    <button type="submit">Start</button>
+</form>
+
+<div class="boilers">
+    <div class="unit"><div class="label">Hours</div><div class="boiler"><div class="fuel" id="fuel-h"></div></div></div>
+    <div class="unit"><div class="label">Minutes</div><div class="boiler"><div class="fuel" id="fuel-m"></div></div></div>
+    <div class="unit"><div class="label">Seconds</div><div class="boiler"><div class="fuel" id="fuel-s"></div></div></div>
+</div>
+
+<div class="time" id="time" aria-live="polite">00:00:00</div>
+
+<div class="controls">
+    <button id="pause" disabled>Pause</button>
+    <button id="restart" class="secondary" disabled>Restart</button>
+    <button id="reset" class="secondary">Reset</button>
+</div>
+
+<script>
+    const $ = id => document.getElementById(id);
+    let totalMs = 0, remainingMs = 0, endTime = 0, timer = null;
+
+    const pad = n => String(n).padStart(2, "0");
+
+    function render() {
+        const secs = Math.ceil(remainingMs / 1000);
+        const h = Math.floor(secs / 3600), m = Math.floor((secs % 3600) / 60), s = secs % 60;
+        $("time").textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+        // Hours boiler drains relative to the starting hours; minutes and seconds drain each cycle.
+        const startH = Math.floor(totalMs / 3600000);
+        $("fuel-h").style.height = `${startH ? (h / startH) * 100 : 0}%`;
+        $("fuel-m").style.height = `${(m / 59) * 100}%`;
+        $("fuel-s").style.height = `${(s / 59) * 100}%`;
+        const critical = totalMs > 0 && secs <= 10;
+        document.querySelectorAll(".boiler").forEach(b => b.classList.toggle("critical", critical && secs > 0));
+    }
+
+    function tick() {
+        remainingMs = Math.max(0, endTime - Date.now());
+        render();
+        if (remainingMs === 0) {
+            stop();
+            $("time").classList.add("done");
+            $("pause").disabled = true;
+        }
+    }
+
+    function run() {
+        endTime = Date.now() + remainingMs;
+        timer = setInterval(tick, 250);
+        $("pause").textContent = "Pause";
+        $("pause").disabled = false;
+        $("restart").disabled = false;
+        tick();
+    }
+
+    function stop() { clearInterval(timer); timer = null; }
+
+    $("setup").addEventListener("submit", e => {
+        e.preventDefault();
+        const val = id => Math.max(0, parseInt($(id).value, 10) || 0);
+        totalMs = ((val("h") * 60 + val("m")) * 60 + val("s")) * 1000;
+        if (!totalMs) return;
+        stop();
+        $("time").classList.remove("done");
+        remainingMs = totalMs;
+        run();
+    });
+
+    $("pause").addEventListener("click", () => {
+        if (timer) {                 // pause keeps the remaining time
+            stop();
+            remainingMs = Math.max(0, endTime - Date.now());
+            $("pause").textContent = "Resume";
+        } else if (remainingMs > 0) {
+            run();
+        }
+    });
+
+    $("restart").addEventListener("click", () => {
+        stop();
+        $("time").classList.remove("done");
+        remainingMs = totalMs;
+        run();
+    });
+
+    $("reset").addEventListener("click", () => {
+        stop();
+        totalMs = remainingMs = 0;
+        $("time").classList.remove("done");
+        $("pause").disabled = $("restart").disabled = true;
+        $("pause").textContent = "Pause";
+        render();
+    });
+
+    render();
+</script>
+</body>
+</html>
